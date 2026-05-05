@@ -3,5 +3,3 @@ instal·lació completa del sistema, seleccionant les opcions més adients per a
 entorn d’ofimàtica o treball col·laboratiu. Durant la instal·lació, identifica els principals elements
 funcionals del sistema operatiu, com el gestor d’arxius, el gestor de processos, el sistema de
 permisos, el registre de Windows, i les opcions de configuració inicial.
-
-
