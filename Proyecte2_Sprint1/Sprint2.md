@@ -99,10 +99,56 @@ Aquí vemos el comando 'net localgroup Limitats' mostrando que ambos alumnos son
 Después haremos la prueba de fuego en Cuotas:
 
 
+Iniciamos no con el usuario que tenemos si no con el que hemos creado:
 
-(captura)
+.
+
+
+<img width="446" height="430" alt="image" src="https://github.com/user-attachments/assets/79764fea-efc3-4045-9a43-786f75b35f0b" />
+
+
+ya que hemos iniciado algo nuevo no tenemos ningun archivo con pero entonces para eso creamps un archivo gigante desde el CMD con este comando:
+
+.
+
+<img width="840" height="182" alt="image" src="https://github.com/user-attachments/assets/01ccc310-c0af-4f94-851a-e43105dcf5c9" />
+
+.
+
+
+resultats:
+
+<img width="521" height="142" alt="image" src="https://github.com/user-attachments/assets/0611dae2-a7f1-4adc-9d01-abbf891f6827" />
+
+
+.
+
+<img width="892" height="632" alt="image" src="https://github.com/user-attachments/assets/2bac5aff-a867-4576-9cb3-ab5279f8f75e" />
+
 
 La captura nos muestra que el mensaje de error de Windows diciendo que no hay espacio suficiente en el disco (aunque el disco sea de 5GB, la cuota lo frena).
+
+.
+
+Ahora veremos los Script y Automatización
+
+.
+
+
+<img width="799" height="677" alt="image" src="https://github.com/user-attachments/assets/900c3c4d-fc66-4b00-bcae-a43665c98506" />
+
+.
+
+<img width="496" height="400" alt="image" src="https://github.com/user-attachments/assets/3268623d-ce75-4016-b048-648e339333e7" />
+
+.
+
+<img width="738" height="422" alt="image" src="https://github.com/user-attachments/assets/72f3169a-6616-4953-a32b-dc0a6e89bc53" />
+
+.
+
+
+
 
 
 
