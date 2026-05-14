@@ -148,6 +148,46 @@ Ahora veremos los Script y Automatización
 .
 
 
+Entramos con :
+
+<img width="660" height="222" alt="image" src="https://github.com/user-attachments/assets/9d822fc6-5cea-4276-910c-e406ac8c3b5e" />
+
+
+.
+
+
+<img width="458" height="178" alt="image" src="https://github.com/user-attachments/assets/f8de1e67-63a7-4888-b1f1-4e414f9fee46" />
+
+.
+
+<img width="378" height="158" alt="image" src="https://github.com/user-attachments/assets/425b61c1-0a81-4933-8f01-e691f9702e67" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
