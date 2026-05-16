@@ -167,29 +167,31 @@ Entramos con :
 
 me falta hacer: copies de seguretat i gestor de procesos
 
+.
+
+<img width="651" height="549" alt="image" src="https://github.com/user-attachments/assets/5ae71706-0146-4baa-ad5f-514c76b7a21b" />
+
+.
+
+<img width="341" height="97" alt="image" src="https://github.com/user-attachments/assets/5d0c469a-5f3d-4bbb-9b06-cb7c22c225f4" />
 
 
+.
+
+<img width="450" height="277" alt="image" src="https://github.com/user-attachments/assets/f4cf969c-be33-4579-9dd8-6131d88926fa" />
 
 
+.
 
+<img width="546" height="193" alt="image" src="https://github.com/user-attachments/assets/a78a088a-536a-4352-885b-b507ec6efd1f" />
 
+.
 
+<img width="736" height="555" alt="image" src="https://github.com/user-attachments/assets/3de8d5e0-1121-46a7-aed8-4db0dee7cbf5" />
 
+.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<img width="498" height="187" alt="image" src="https://github.com/user-attachments/assets/9cfd3d9d-f404-43a0-9d39-8f637a3caa99" />
 
 
 
