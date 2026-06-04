@@ -190,122 +190,299 @@ L'alta disponibilitat requereix connectar i preparar nous discos físics o cabin
 S'ha afegit un disc addicional i creat una partició nova:
 sudo fdisk -l              # Llistar discos sudo fdisk /dev/sdb      # Particionar sudo mkfs.ext4 /dev/sdb1  # Format
 
+<img width="817" height="637" alt="image" src="https://github.com/user-attachments/assets/0773e7e1-5cf0-458d-a9de-001dadf1aaca" />
+
+.
+
+<img width="721" height="296" alt="image" src="https://github.com/user-attachments/assets/7bd85ec0-1e9b-4798-b82d-030c678c58da" />
+
+
 ## 5.2 Muntatge automàtic
+
+Si un disc addicional es munta manualment, aquest desapareixerà en reiniciar l'equip. Afegir-lo al fitxer /etc/fstab referenciat pel seu identificador únic (UUID) garanteix estabilitat i consistència de dades en cada arrencada.
+
 S'ha configurat muntatge automàtic al fitxer fstab:
 sudo blkid                 # Obtenir UUID sudo nano /etc/fstab
 UUID=abc123 /mnt/storage ext4 defaults 0 2
 sudo mount -a             # Verificar muntatge
 
+<img width="626" height="107" alt="image" src="https://github.com/user-attachments/assets/5fbf1c6c-78cb-4166-9b2a-a332dcbb530d" />
+
 ## 5.3 Quotes de disc
+
+En entorns compartits multiprocés, un usuari podria descarregar o generar fitxers de grans dimensions (intencionadament o per error) i exhaurir l'espai total de disc. Limitar l'espai mitjançant quotes protegeix la disponibilitat del magatzem per a la resta de l'equip.
+
 S'han establert quotes de disc per limitar ús per usuari:
 sudo apt install quotatool sudo setquota -u developer1 1000000 1200000 0 0 /dev/sdb1
 sudo repquota -a          # Verificar quotes
 
+<img width="716" height="266" alt="image" src="https://github.com/user-attachments/assets/4ebc3ddd-ae55-4733-a446-203adaf65aed" />
+
+
 
 # 6. CÒPIES DE SEGURETAT I AUTOMATITZACIÓ
 
+.
+
+<img width="794" height="217" alt="image" src="https://github.com/user-attachments/assets/4864d068-ff2a-44a0-b768-7c2532ff4ac5" />
+
+.
+
+
 ## 6.1 Còpies de seguretat automàtiques
+
+La pèrdua de dades és el risc més gran d'una organització. Dissenyar un script bash estructurat que empaqueti i comprimeixi (tar.gz) els directoris actius garanteix que TechSolutions pugui recuperar dades davant desastres.
+
 S'ha creat un script de còpia de seguretat per a carpetes importants:
 #!/bin/bash BACKUP_DIR=/backups DATE=$(date +%Y%m%d_%H%M%S) tar -czf $BACKUP_DIR/data_$DATE.tar.gz /home/*/important/
 
+<img width="634" height="189" alt="image" src="https://github.com/user-attachments/assets/5fdb6b41-7600-46a4-b72d-4cc95ac0eebb" />
+
+.
+
+<img width="573" height="100" alt="image" src="https://github.com/user-attachments/assets/db0d7070-45e4-44dc-9a87-b1eafc85fba4" />
+
+
+
 ## 6.2 Automatització amb cron
+
+Els administradors de sistemes no han d'executar les tasques de seguretat manualment. Delegar-ho al dimoni cron garanteix que les tasques s'executin de manera desatesa en hores de baixa càrrega laboral (ex: a les 2:00 AM).
+
 S'ha programat l'execució diària del backup:
 sudo crontab -e
 0 2 * * * /usr/local/bin/backup.sh  # Execució a les 2:00 AM
 
+<img width="425" height="102" alt="image" src="https://github.com/user-attachments/assets/e938307f-a670-4ae7-a668-55f292e69d97" />
+
+.
+
+<img width="546" height="104" alt="image" src="https://github.com/user-attachments/assets/8a686565-f140-4573-9d46-96673aeab434" />
+
+
+
 ## 6.3 Verificació de còpies
+
+Un backup que no es verifica no és un backup vàlid. Auditar periòdicament el pes dels fitxers i llistar el contingut del contingut comprimit sense extreure'l assegura la integritat del sistema de recuperació.
+
 Verificació del funcionament correcte:
 ls -lah /backups/         # Verificar fitxers creats tar -tzf /backups/data_*.tar.gz | head  # Verificar contingut
+
+<img width="733" height="296" alt="image" src="https://github.com/user-attachments/assets/2f393c05-9ecf-4636-b1ca-5c79c2e13849" />
+
 
 
 # 7. SERVEI LDAP I INTEGRACIÓ DE DOMINI
 
 ## 7.1 Instal·lació d'LDAP
+
+En lloc de crear credencials de forma local a cada ordinador de TechSolutions, OpenLDAP centralitza l'autenticació. Si un empleat canvia la seva contrasenya, el canvi s'aplica instantàniament a tota la xarxa corporativa.
+
 S'ha instal·lat i configurat el servidor OpenLDAP:
 sudo apt install -y slapd ldap-utils
 sudo dpkg-reconfigure slapd
 
+<img width="718" height="421" alt="image" src="https://github.com/user-attachments/assets/e40b01ea-935a-40e2-a430-b7e36cea54dd" />
+
+.
+
+<img width="458" height="239" alt="image" src="https://github.com/user-attachments/assets/fea8a7ad-2e99-4612-b708-15fa236e9a44" />
+
+
 ## 7.2 Creació d'usuaris en el domini
+
+S'utilitzen fitxers estructurats .ldif (LDAP Data Interchange Format) per injectar de forma segura objectes, usuaris i grups a l'arbre del directori actiu sense dependre d'entorns gràfics.
+
 S'han creat usuaris dins del domani LDAP:
 cat > user.ldif << EOF dn: uid=ldapuser1,ou=people,dc=techsolutions,dc=local objectClass: inetOrgPerson uid: ldapuser1 sn: User cn: LDAP User One userPassword: {SSHA}hash_password_here EOF  ldapadd -x -D cn=admin,dc=techsolutions,dc=local -W -f user.ldif
 
+<img width="716" height="389" alt="image" src="https://github.com/user-attachments/assets/4dd17033-3ab3-48c8-985d-5c96cf4ef5d6" />
+
+.
+
+<img width="728" height="308" alt="image" src="https://github.com/user-attachments/assets/91ef96f0-2232-4c1f-a042-bc3b8159034c" />
+
+
+
 ## 7.3 Configuració del client LDAP
+
+Configura els mòduls PAM (Pluggable Authentication Modules) i NSS del sistema perquè, quan algú intenti iniciar sessió, l'ordinador local sàpiga que ha d'anar a preguntar-li al servidor LDAP.
+
 S'ha configurat una màquina client per unir-se al domini:
 sudo apt install -y libnss-ldap libpam-ldap
 sudo auth-client-config -t nss -p lac_ldap
 
+<img width="723" height="99" alt="image" src="https://github.com/user-attachments/assets/288da26c-f52e-4c87-aab0-fb8df81b8061" />
+
+.
+
+<img width="465" height="260" alt="image" src="https://github.com/user-attachments/assets/6600ff64-f3d9-487b-8043-1a1002010dcc" />
+
+.
+
+<img width="575" height="202" alt="image" src="https://github.com/user-attachments/assets/de1b1905-771b-4a5a-b3f2-e88cfda8c847" />
+
+.
+
+<img width="724" height="423" alt="image" src="https://github.com/user-attachments/assets/3e0f8c74-b7b8-4b7f-8da8-ff9b473b3dd7" />
+
+
+
+
+
 ## 7.4 Verificació d'inici de sessió
+
+Configura els mòduls PAM (Pluggable Authentication Modules) i NSS del sistema perquè, quan algú intenti iniciar sessió, l'ordinador local sàpiga que ha d'anar a preguntar-li al servidor LDAP.
+
 Comprovació que els usuaris del domini poden iniciar sessió:
 getent passwd ldapuser1  # Verificar usuari disponible su - ldapuser1           # Provar inici de sessió
+
+<img width="632" height="217" alt="image" src="https://github.com/user-attachments/assets/eb701107-cce5-4d86-bad5-952364995366" />
+
+.
+
+<img width="835" height="87" alt="image" src="https://github.com/user-attachments/assets/c3ec65fa-8ced-45df-a4a7-9ac965a9d75a" />
+
+.
+
+<img width="531" height="52" alt="image" src="https://github.com/user-attachments/assets/e6f19eb2-d251-4f8a-af4b-18b531985591" />
+
+.
+
+<img width="290" height="67" alt="image" src="https://github.com/user-attachments/assets/ec4ecad6-d720-49a1-a555-579ff9649300" />
+
+.
+
+<img width="590" height="290" alt="image" src="https://github.com/user-attachments/assets/79ad9a65-340e-4e4a-a8a2-d730981c1dba" />
+
+.
+
+<img width="322" height="52" alt="image" src="https://github.com/user-attachments/assets/1558c1eb-fbe5-4a02-a910-438ef44a02d6" />
+
+
+
 
 
 # 8. COMPARTICIÓ DE RECURSOS
 
 ## 8.1 Servidor SAMBA
+
+TechSolutions interactua amb sistemes operatius diversos. Samba implementa el protocol SMB/CIFS, que permet que carpetes allotjades a Ubuntu siguin accessibles i totalment compatibles amb ordinadors Windows de l'empresa.
+
 S'ha instal·lat i configurat Samba per a compartició SMB:
 sudo apt install -y samba samba-common-bin
 sudo nano /etc/samba/smb.conf
 Configuració de compartició:
 [documents] path = /home/shared/documents valid users = developer1, developer2 writable = yes create mask = 0775 directory mask = 0775
 sudo systemctl restart smbd
+
+<img width="891" height="506" alt="image" src="https://github.com/user-attachments/assets/86ce9f9c-b4ea-4b47-a3c8-6a84d87a4141" />
+
+.
+
+<img width="795" height="417" alt="image" src="https://github.com/user-attachments/assets/c144b89f-26e9-4736-8fd0-0c519f4121cd" />
+
+
  
 ## 8.2 Servidor NFS
+
+El protocol NFS (Network File System) ofereix un rendiment i velocitat de transferència molt superior a Samba quan la comunicació es realitza estrictament entre servidors Linux directament connectats per xarxa.
+
 S'ha configurat NFS per a compartició entre equips Linux:
 sudo apt install -y nfs-kernel-server
 sudo nano /etc/exports
 /home/shared 192.168.1.0/24(rw,sync,no_subtree_check)
 sudo exportfs -ra
 
+<img width="724" height="202" alt="image" src="https://github.com/user-attachments/assets/ec7143f6-d49e-482c-8454-6cedf7226467" />
+
+
 ## 8.3 Muntatge remot NFS
+
+Permet que els equips clients vegin el magatzem remot com si fos un disc dur local o un directori físic més de la pròpia màquina de l'usuari.
+
 Client NFS montat correctament:
 sudo mount -t nfs 192.168.1.10:/home/shared /mnt/nfs
 mount | grep nfs         # Verificar muntatge
+
+<img width="1011" height="226" alt="image" src="https://github.com/user-attachments/assets/2bb71fe9-ffd8-43fa-b4e9-ef31d09fc78a" />
+
 
 
 # 9. RAIDs I TOLERÀNCIA A FALLADES
 
 ## 9.1 Configuració de RAID 1
+
+Si un disc dur físic es trenca a TechSolutions, el servidor normalment cauria. Amb un RAID 1 (Mirroring), les dades s'escriuen de forma idèntica en dos discos alhora. Si un falla, l'altre continua treballant en calent sense interrupció del servei.
+
 S'ha configurat un RAID 1 per a redundància:
 sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb /dev/sdc
 sudo mkfs.ext4 /dev/md0 sudo mount /dev/md0 /mnt/raid
 
+<img width="969" height="168" alt="image" src="https://github.com/user-attachments/assets/b45e556f-0fa9-4c40-a8a2-57a84ddc3aff" />
+
+
 ## 9.2 Verificació d'estat
+
+Un bon pla d'auditoria requereix provar el comportament de la infraestructura davant catàstrofes. Marcar un disc com a defectuós simuladament ens assegura que el sistema respondrà correctament i que podrem extreure el maquinari danyat de forma segura.
+
 Verificació del RAID i status de discos:
 cat /proc/mdstat
 sudo mdadm --detail /dev/md0
 
-## 9.3 Comportament davant d'errors
-Test de comportament en cas de fallada:
-sudo mdadm --manage /dev/md0 --set-faulty /dev/sdb
-El disc es marca com a fallat, RAID segueix funcionant sudo mdadm --manage /dev/md0 --remove /dev/sdb
+<img width="725" height="450" alt="image" src="https://github.com/user-attachments/assets/d156409b-7652-483b-b81f-8d95e92b1697" />
+
 
 
 # 10. MONITORITZACIÓ, RENDIMENT I AUDITORIES
 
 ## 10.1 Monitorització de recursos
+
+Evita de forma proactiva que el servidor col·lapsi. Monitoritzar mètriques bàsiques de consum (Memòria lliure, emmagatzematge restant i cicles de processador) ajuda a planificar ampliacions abans d'arribar al 100% d'ús.
+
 S'han instal·lat eines de monitorització del sistema:
 sudo apt install -y monitoring-plugins nagios-plugins
 free -h              # Memòria disponible df -h              # Espai en disc vcstat             # Estadístiques de CPU
 
+<img width="899" height="376" alt="image" src="https://github.com/user-attachments/assets/3f079496-c90f-42e7-b3b2-2978df81844e" />
+
+
 ## 10.2 Auditories i registres
+
+Per normatives de seguretat i compliment legal, cal saber qui fa què al sistema. El servei auditd monitoritza fitxers crítics de l'empresa (com el fitxer de contrasenyes) i registra qualsevol modificació no autoritzada.
+
 Configuració d'auditories del sistema:
 sudo apt install -y auditd
 sudo auditctl -w /etc/passwd -p wa -k passwd_changes
 sudo ausearch -k passwd_changes  # Revisar auditories
 
+<img width="1007" height="298" alt="image" src="https://github.com/user-attachments/assets/48ffe34f-c283-4683-8432-fe44315555ac" />
+
+
 ## 10.3 Revisió de logs
+
+Quan apareix un problema o un comportament erràtic al programari, la millor manera de trobar l'origen de la fallada és analitzar cronològicament els missatges d'error enviats pel kernel o pels dimonis del sistema.
+
 Monitoritzar logs del sistema:
 sudo tail -f /var/log/syslog journalctl -f                    # Últims eventos grep -i error /var/log/syslog   # Buscar errors
+
+<img width="898" height="526" alt="image" src="https://github.com/user-attachments/assets/045f4cd6-7883-434a-9605-761513d4a1de" />
+
 
 
 # 11. GESTIÓ D'ACTUALITZACIONS
 
 ## 11.1 Sistema de gestió d'actualitzacions
+
+Els servidors exposats a internet reben atacs constants que aprofiten vulnerabilitats zero-day. Activar unattended-upgrades permet que el sistema operatiu descarregui i apliqui els pegats de seguretat crítics de manera autònoma a les nits sense intervenció humana.
+
 S'ha configurat l'actualització automàtica de paquets:
 sudo apt install -y unattended-upgrades
 sudo nano /etc/apt/apt.conf.d/50unattended-upgrades
 
 ## 11.2 Actualitzacions automàtiques
+
+El procés continuat d'actualització deixa residus al disc dur (paquets de versions antigues en desús, dependències trencades i fitxers de configuració orfes) que cal netejar per mantenir el sistema lleuger i eficient.
+
 Verificació del funcionament de les actualitzacions:
 sudo systemctl status unattended-upgrades sudo tail -f /var/log/unattended-upgrades/unattended-upgrades.log
 
